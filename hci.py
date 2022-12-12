@@ -46,7 +46,7 @@ class App(ct.CTk):
         # =================== create two frames ===================
 
         #configure grid layout (2x1)
-        self.grid_columnfigure(1, weight=1)
+        self.grid_columnconfigure(1, weight=1)
         self.grid_rowconfigure(0,weight=1)
 
         self.frame_left = ct.CTkFrame(master=self, width=180, corner_radius=0)
@@ -64,7 +64,7 @@ class App(ct.CTk):
         self.frame_left.grid_rowconfigure(9, minsize=20) # empty row with minsize as spacing
         self.frame_left.grid_rowconfigure(11, minsize=10) # empty row with minsize as spacing
 
-        self.lbl_menu = ct.CTKLabel(master=self.frame_left, text="Image Options", 
+        self.lbl_menu = ct.CTkLabel(master=self.frame_left, text="Image Options", 
                                     text_font=("Roboto Medium", -16)) # font name and size in px
         self.lbl_menu.grid(row=1, column=0, pady=10, padx=10)
         self.cmd_edge = ct.CTkButton(master=self.frame_left, text="Edge Detection",
@@ -128,8 +128,11 @@ class App(ct.CTk):
         self.cmd_changecam = tk.Button(master=self.frame_right, text="Switch Camera", command=self.change_cam)
         self.cmd_changecam.place(bordermode=tk.INSIDE, relx=0.85, rely=0.1, anchor=tk.CENTER, width=120, height=30)
 
-        self.cmd_imgpath = ct.CTkEntry(master=self.frame_right, width=240, placeholder_text="Path to image file")
-        self.cmd_imgpath.grid(row=11, column=0, pady=10, padx=10, sticky="nw")
+        self.txt_imgpath = ct.CTkEntry(master=self.frame_right, width=240, placeholder_text="Path to image file")
+        self.txt_imgpath.grid(row=11, column=0, pady=10, padx=10, sticky="nw")
+
+        self.cmd_browse = ct.CTkButton(master=self.frame_right, text="Browse", command=self.browse_image)
+        self.cmd_browse.grid(row=11, column=0, pady=10, padx=10, sticky="nw")
 
         #Manage redirection of console output to GUI
         sys.stdout = TextRedirector(self.status_area, "stdout")
@@ -162,7 +165,7 @@ class App(ct.CTk):
 
         if self.on_capture == True:
             self.on_capture = False
-            self.saveimg.place_forget()
+            self.cmd_saveimg.place_forget()
             self.cmd_tryagain.place_forget()
 
         self.txt_imgpath.configure(textvariable="")
