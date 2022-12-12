@@ -169,10 +169,10 @@ def __init__(self):
     self.status_area.tag_configure("stdout", foreground="#000000")
 
     self.cmd_capture = tk.Button(master=self.frame_right, text="Capture", command=self.saveimg_prompt)
-    self.cmd_capture.place(bordermode=tk.INSIDE relx=0.3, rely=0.5, anchor=tk.CENTER, width=300, height=30)
+    self.cmd_capture.place(bordermode=tk.INSIDE, relx=0.3, rely=0.5, anchor=tk.CENTER, width=300, height=30)
 
     self.cmd_changecam = tk.Button(master=self.frame_right, text="Switch Camera", command=self.change_cam)
-    self.cmd_changecam.place(bordermode=tk.INSIDE relx=0.85, rely=0.1, anchor=tk.CENTER, width=120, height=30)
+    self.cmd_changecam.place(bordermode=tk.INSIDE, relx=0.85, rely=0.1, anchor=tk.CENTER, width=120, height=30)
 
     self.cmd_imgpath = ct.CTkEntry(master=self.frame_right, width=240, placeholder_text="Path to image file")
     self.cmd_imgpath.grid(row=11, column=0, pady=10, padx=10, sticky="nw")
@@ -194,9 +194,9 @@ def __init__(self):
 def browse_image(self):
     # Handles file browsing for image
     global img
-    self.filename = filedialog.askpenfilename(initialdir = "/", 
-                                            title = "select image file to identify",
-                                            filetypes = (("Image files", ".png, .jpg, .bmp"), ("All files, "*.*"")))
+    self.filename = filedialog.askopenfilename(initialdir = "/", 
+                                            title = "Select image file to identify",
+                                            filetypes = (("Image files", ".png, .jpg, .bmp"), ("All files, "*.*")))
             
     self.clear_status()
     self.cam_button_stat(False)
@@ -263,11 +263,33 @@ def img_scale(self, orig_ht):
         scale = 500
     return scale
 
+def edge_detection(self):
+    # Manage edge detection to the loaded image
+    global imgtk
+    self.clear_status()
+    info = "Edge detection is an iage processing technique to find "
+    info += "boundaries of objects in the image. "
+    print(info)
 
-    
-     
+#Read image from a file
+img  = cv2.imread(self.filename)
 
-    
+#Resize image to fit display
+scale_percent = self.img_scale(img.shape[0])
+width = int(img.shape[1] * scale_percent / 100)
+height = int(img.shape[0] * scale_percent / 100)
+dim = (width, height)
+resized = cv2.resize(img, dim, interpolation = cv2.INTER_AREA)
+edges = cv2.Canny(resized,100,200)
+
+im = Image.fromarray(edges)
+imgtk = ImageTk.PhotoImage(image=im) 
+
+print("Image edge detection using Canny() function.")
+self.img_holder.configure(image=imgtk)
+self.status_area.configure(state='disabled')
+self.cmd_reset.configure(state='normal')
+
 
     
 
