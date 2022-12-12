@@ -109,7 +109,7 @@ class App(ct.Ctk):
         self.frame_right.grid_rowconfigure(0, minsize=10) # empty row with minsize as spacing
         self.frame_right.grid_rowconfigure(5, weight=1) # empty row as spacing 
 
-        self.frame = np.random.randint(0,255[100,100,3],dtype='uint8')
+        self.frame = np.random.randint(0,255,[100,100,3],dtype='uint8')
         self.frame_img = ImageTk.PhotoImage(Image.fromarray(self.frame))
 
         self.img_holder = ct.CTkLabel(master=self.frame_right, text="Image placeholder",
@@ -295,3 +295,153 @@ class App(ct.Ctk):
 
             self.start_resize_cam()
             success, frame = self.cap.read()
+            cv2image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGBA)
+
+            # Assign camera feed/grames to an image holder
+            prevImage = Image.fromarray(cv2image)
+            imgtk = ImageTk.PhotoImage(image=prevImage)
+            self.img_holder.imgtk = imgtk
+            self.img_holder.configure(image=imgtk)
+            self.cmd_capture.focus()
+
+            if not self.cancel:
+                self.img_holder.after(10, self.show_frame)
+        else:
+            self.clear_status()
+            print("Using camera feed to take pictures.")
+
+    def load_cam_index(self):
+        # Create and access file containing list of previously used camera
+        self.cam_list = os.environ['ALLUSERSPROFILE'] + "WebcamCap.txt"
+        try:
+            f = open(self.cam_list, 'r')
+            return int(f.readline())
+        except:
+            return 0
+
+    def start_resize_cam(self):
+        # Start capturing and resizing camera resolution
+        self.cap = cv2.VideoCapture(self.cam_index)
+        self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 320)
+        self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 240)
+        self.cap.set(cv2.CAP_PROP_FPS, 25)
+
+    def show_frame(self):
+        # Continuously update image being loaded to a label
+        global prevImg
+
+        _, frame = self.cap.read()
+        cv2image = cv2.cvtColor(frame, cv2.COLOR_BG2BGRA)
+
+        prevImg = Image.fromarray(cv2image)
+        imgtk = ImageTk.PhotoImage(image=prevImg)
+        self.img_holder.imgtk = imgtk
+        self.img_holder.configure(image=imgtk)
+        if not self.cancel:
+            self.img_holder.after(10, self.show_frame)
+
+    def saveimg_prompt(self):
+        # Captured still image and ready for saving
+        self.cancel = True
+        self.on_capture = True
+
+        self.cmd_capture.place_forget()
+        self.cmd_saveimg = tk.Button(master=self.frame_right, text="Save Image", command=self.saveimg_exit)
+        self.cmd_tryagain = tk.Button(master=self.frame_right, text="Try Again", command=self.retake_img)
+        self.cmd_saveimg.place(anchor=tk.CENTER, relx=0.3, rely=0.5, width=110, height=30)
+        self.cmd_tryagain.place(anchor=tk.CENTER, relx=0.65, rely=0.5, width=110, height=30)
+        self.cmd_saveimg.focus()
+
+    def change_cam(self, event=0, nextCam=-1):
+        # Manage changing camera source
+        if nextCam == -1:
+            self.cam_index += 1
+        else:
+            self.cam_index = nextCam
+        del(self.cap)
+        self.start_resize_cam()
+
+        # Try to get a frame, if it returns nothing
+        success, frame = self.cap.read()
+        if not success:
+            self.cam_index = 0
+            del(self.cap)
+            self.start_resize_cam()
+
+        # Add existing list of previously accessed camera to a file
+        f = open(self.cam_list, "w")
+        f.write(str(self.cam_index))
+        f.close()
+
+    def saveimg_exit(self):
+        import glob
+        global prevImg
+
+        # Look for the occurence of the image file and file number to the filename.
+        file_ctr = 0
+        files = glob.glob(BASE_DIR + "\imageCap*.*", recursive=True)
+        for file in files:
+            file_ctr +=1
+
+        if (len(sys.argv) < 2):
+            filepath = BASE_DIR + "\imageCap{}.png".format(file_ctr)
+        else:
+            filepath = sys.argv[1]
+
+        print ("File saved at " + filepath)
+
+        # Resize image before saving
+        basewidth = 600
+        wpercent = (basewidth/float(prevImg.size[0]))
+        hsize = int((float(prevImg.size[1])*float(wpercent)))
+        prevImg = prevImg.resize((basewidth,hsize), Image.Resampling.LANCZOS)
+        prevImg.save(filepath)
+
+    def retake_img(self):
+        # Returning to capturing another image from camera
+        self.cancel = False
+        self.cmd_saveimg.place_forget()
+        self.cmd_tryagain.place_forget()
+        self.cmd_capture.focus()
+
+        self.bind('<Return>', self.saveimg_prompt)
+        self.cmd_capture.place(bordermode=tk.INSIDE, relx=0.48, rely=0.5, anchor=tk.CENTER, width=300, height=30)
+        self.img_holder.after(10, self.show_frame)
+
+    def cam_button_stat(self, stat):
+        # Managing necessary buttons for capturing image and changing camera source
+        if stat == True:
+            self.cmd_capture.place(bordermode=tk.INSIDE, relx=0.48, rely=0.5, anchor=tk.CENTER, width=300, height=30)
+            self.cmd_capture.place(bordermode=tk.INSIDE, relx=0.84, rely=0.08, anchor=tk.CENTER, width=105, height=30)
+        else:
+            self.img_holder.configure(image="")
+            self.cmd_capture.place_forget()
+            self.cmd_changecam.place_forget()
+
+    def imgproc_btns(self, stat):
+        # Set the status of buttons
+        self.cmd_edge.configure(state=stat)
+        self.cmd_gblur.configure(state=stat)
+        self.cmd_crop.configure(state=stat)
+        self.cmd_sharp.configure(state=stat)
+        self.cmd_reset.configure(state=stat)
+
+    def reset_img(self):
+        self.display_img(self.filename)
+
+    def set_window_theme(self, new_theme):
+        ct.set_appearance_mode(new_theme)
+
+    def clear_status(self):
+        self.status_area.configure(state='normal')
+        self.status_area.delete("1.0", tk.END)
+
+    def exit_app(self):
+        self.quit()
+
+    def on_closing(self, event=0):
+        self.destroy()
+
+if __name__ == "__main__":
+    app = App()
+    app.mainloop()
