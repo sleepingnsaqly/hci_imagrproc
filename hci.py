@@ -29,7 +29,7 @@ class TextRedirector(object):
     def flush(self):
         self.widget.update()
 
-class App(ct.Ctk):
+class App(ct.CTk):
 
     WIDTH = 800
     HEIGHT = 600
