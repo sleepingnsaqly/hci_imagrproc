@@ -12,7 +12,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 #Set the initial themes of the app window
 ct.set_appearance_mode("Dark")
-ct.set_default_color_theme(BASE_DIR + "\\themes.json")
+ct.set_default_color_theme(BASE_DIR + "\\themes.json") # ct.set_default_color_theme("green")
 
 class TextRedirector(object):
     # Handles consolw output to GUI
@@ -97,7 +97,7 @@ class App(ct.CTk):
 
         self.lbl_theme = ct.CTkLabel(master=self.frame_left, text="Window Theme:",
                                         text_font=("Roboto Medium", -12)) # font name and size in px
-        self.lbl_theme.grid = ct.CTkLabel(row=9, column=0, pady=5, padx=10, sticky="s")
+        self.lbl_theme.grid(row=9, column=0, pady=5, padx=10, sticky="s")
 
         self.opt_theme = ct.CTkOptionMenu(master=self.frame_left, values=["Light", "Dark", "System"],
                                         command=self.set_window_theme)
@@ -113,13 +113,13 @@ class App(ct.CTk):
         self.frame_img = ImageTk.PhotoImage(Image.fromarray(self.frame))
 
         self.img_holder = ct.CTkLabel(master=self.frame_right, text="Image placeholder",
-                                        bg_color="gray", text_font=("Roboto Medium, -14"))                               
+                                        bg_color="gray", text_font=("Roboto Medium", -14))                               
         self.img_holder.grid(row=0, column=0, columnspan=2, pady=15, padx=10, sticky= "we")
 
         self.status_area = st.ScrolledText(master=self.frame_right, width=73, height=7,
                                             wrap="word", font =("Roboto Medium", 10))
         self.status_area.grid(row=9, column=0, pady=10, padx=10, sticky= "nwe")
-        self.status_area.tag_configure("stderr", foreground="#b222222")
+        self.status_area.tag_configure("stderr", foreground="#b22222")
         self.status_area.tag_configure("stdout", foreground="#000000")
 
         self.cmd_capture = tk.Button(master=self.frame_right, text="Capture", command=self.saveimg_prompt)
@@ -129,7 +129,7 @@ class App(ct.CTk):
         self.cmd_changecam.place(bordermode=tk.INSIDE, relx=0.85, rely=0.1, anchor=tk.CENTER, width=120, height=30)
 
         self.txt_imgpath = ct.CTkEntry(master=self.frame_right, width=240, placeholder_text="Path to image file")
-        self.txt_imgpath.grid(row=11, column=0, pady=10, padx=10, sticky="nw")
+        self.txt_imgpath.grid(row=10, column=0, columnspan=2, pady=5, padx=10, sticky="swe")
 
         self.cmd_browse = ct.CTkButton(master=self.frame_right, text="Browse", command=self.browse_image)
         self.cmd_browse.grid(row=11, column=0, pady=10, padx=10, sticky="nw")
@@ -262,6 +262,28 @@ class App(ct.CTk):
 
         # Display input and output image
         cv2.imshow("Gaussian Smoothing", np.hstack((img,dst)))
+        cv2.waitKey(0) # waits until a key is pressed
+        cv2.destroyAllWindows() # destroys the window showing the image
+
+    def crop_img(self):
+        global imgtk
+        info = "Cropping is used to get a particular part of an image."
+        info += "To crop an image, you just need the coordinates from an "
+        info += "image according to your area of interest."
+        print(info)
+
+        # Read image from a file
+        img = cv2.imread(self.filename)
+
+        # Set the rectangular portio of the image to be cropped
+        hgt, wdt = img.shape[:2]
+        start_row, start_col = int(hgt * .25), int(wdt * .25)
+        end_row, end_col = int(hgt * .75), int(wdt * .75)
+        cropped = img[start_row: end_row, start_col:end_col]
+
+        cv2.imshow("Original", img)
+        cv2.imshow("Cropped", cropped)
+
         cv2.waitKey(0) # waits until a key is pressed
         cv2.destroyAllWindows() # destroys the window showing the image
 
