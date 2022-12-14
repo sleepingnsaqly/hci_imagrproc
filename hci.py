@@ -12,7 +12,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 #Set the initial themes of the app window
 ct.set_appearance_mode("Dark")
-ct.set_default_color_theme(BASE_DIR + "\\themes.json") # ct.set_default_color_theme("green")
+ct.set_default_color_theme(BASE_DIR + "\\themes.json")
 
 class TextRedirector(object):
     # Handles consolw output to GUI
