@@ -201,7 +201,7 @@ class App(ct.CTk):
         blue,green,red = cv2.split(resized)
         resized = cv2.merge((red,green,blue))
         im = Image.fromarray(resized)
-        imgtk = ImageTk.PhotoImage(image=imgtk)
+        imgtk = ImageTk.PhotoImage(image=im)
         print('Resized Dimensions: ', resized.shape)
 
     def img_scale(self, orig_ht):
