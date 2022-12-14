@@ -153,7 +153,7 @@ class App(ct.CTk):
         global img
         self.filename = filedialog.askopenfilename(initialdir="/",
                                             title="Select image to identify",
-                                            filetypes=(("Image files", ".png", ".jpg", ".bmp"), ("All files", "*.*")))
+                                            filetypes=(("Image files", ".png .jpg .bmp"), ("All files", "*.*")))
                 
         self.clear_status()
         self.cam_button_stat(False)
