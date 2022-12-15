@@ -12,7 +12,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 #Set the initial themes of the app window
 ct.set_appearance_mode("Dark")
-ct.set_default_color_theme(BASE_DIR + "/themes.json")
+ct.set_default_color_theme(BASE_DIR + "\\themes.json")
 
 class TextRedirector(object):
     # Handles console output to GUI
@@ -41,7 +41,7 @@ class App(ct.CTk):
         self.geometry(f"{App.WIDTH}x{App.HEIGHT}")
         self.resizable(width=False, height=False)
         self.protocol("WM_DELETE_WINDOW", self.on_closing) # call .on_closing when app gets closed
-        self.iconbitmap(BASE_DIR + "/poweredby24.ico")
+        self.iconbitmap(BASE_DIR + "\\poweredby24.ico")
 
         # =================== create two frames ===================
 
@@ -87,7 +87,7 @@ class App(ct.CTk):
                                         command=self.open_camera)
         self.cmd_camera.grid(row=6, column=0, pady=5, padx=20)
 
-        self.cmd_reset = ct.CTkButton(master=self.frame_left, text= "Open Reset Image",
+        self.cmd_reset = ct.CTkButton(master=self.frame_left, text= "Reset Image",
                                         command=self.reset_img)
         self.cmd_reset.grid(row=7, column=0, pady=5, padx=20) 
 
