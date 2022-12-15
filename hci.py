@@ -12,10 +12,10 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 #Set the initial themes of the app window
 ct.set_appearance_mode("Dark")
-ct.set_default_color_theme(BASE_DIR + "\\themes.json")
+ct.set_default_color_theme(BASE_DIR + "/themes.json")
 
 class TextRedirector(object):
-    # Handles consolw output to GUI
+    # Handles console output to GUI
     def __init__(self, widget, tag= "stdout"):
         self.widget = widget
         self.tag = tag
@@ -41,7 +41,7 @@ class App(ct.CTk):
         self.geometry(f"{App.WIDTH}x{App.HEIGHT}")
         self.resizable(width=False, height=False)
         self.protocol("WM_DELETE_WINDOW", self.on_closing) # call .on_closing when app gets closed
-        self.iconbitmap(BASE_DIR + "\\poweredby24.ico")
+        self.iconbitmap(BASE_DIR + "/poweredby24.ico")
 
         # =================== create two frames ===================
 
@@ -190,7 +190,7 @@ class App(ct.CTk):
         print('Image Width: \t\t', orig_wt)
         print('No. of Channels: \t\t', chan)
 
-        #Resize image to fit display
+        # Resize image to fit display
         scale_percent = self.img_scale(orig_ht)
         width = int(img.shape[1] *  scale_percent / 100)
         height = int(img.shape[0] *  scale_percent / 100)
@@ -202,6 +202,8 @@ class App(ct.CTk):
         resized = cv2.merge((red,green,blue))
         im = Image.fromarray(resized)
         imgtk = ImageTk.PhotoImage(image=im)
+
+        self.img_holder.configure(image=imgtk)
         print('Resized Dimensions: ', resized.shape)
 
     def img_scale(self, orig_ht):
@@ -310,7 +312,7 @@ class App(ct.CTk):
     def open_camera(self):
         if self.cam_active == False:
             global prevImg
-            self.imgprocbtns('disabled')
+            self.imgproc_btns('disabled')
             self.cam_button_stat(True)
             self.cam_active = True
             self.cam_index = self.load_cam_index()
@@ -323,8 +325,8 @@ class App(ct.CTk):
             cv2image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGBA)
 
             # Assign camera feed/grames to an image holder
-            prevImage = Image.fromarray(cv2image)
-            imgtk = ImageTk.PhotoImage(image=prevImage)
+            prevImg = Image.fromarray(cv2image)
+            imgtk = ImageTk.PhotoImage(image=prevImg)
             self.img_holder.imgtk = imgtk
             self.img_holder.configure(image=imgtk)
             self.cmd_capture.focus()
@@ -356,7 +358,7 @@ class App(ct.CTk):
         global prevImg
 
         _, frame = self.cap.read()
-        cv2image = cv2.cvtColor(frame, cv2.COLOR_BG2BGRA)
+        cv2image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGBA)
 
         prevImg = Image.fromarray(cv2image)
         imgtk = ImageTk.PhotoImage(image=prevImg)
