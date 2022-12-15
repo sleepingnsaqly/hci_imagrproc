@@ -87,7 +87,7 @@ class App(ct.CTk):
                                         command=self.open_camera)
         self.cmd_camera.grid(row=6, column=0, pady=5, padx=20)
 
-        self.cmd_reset = ct.CTkButton(master=self.frame_left, text= "Open Reset Image",
+        self.cmd_reset = ct.CTkButton(master=self.frame_left, text= "Reset Image",
                                         command=self.reset_img)
         self.cmd_reset.grid(row=7, column=0, pady=5, padx=20) 
 
