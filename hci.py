@@ -439,7 +439,7 @@ class App(ct.CTk):
         # Managing necessary buttons for capturing image and changing camera source
         if stat == True:
             self.cmd_capture.place(bordermode=tk.INSIDE, relx=0.48, rely=0.5, anchor=tk.CENTER, width=300, height=30)
-            self.cmd_capture.place(bordermode=tk.INSIDE, relx=0.84, rely=0.08, anchor=tk.CENTER, width=105, height=30)
+            self.cmd_changecam.place(bordermode=tk.INSIDE, relx=0.84, rely=0.08, anchor=tk.CENTER, width=105, height=30)
         else:
             self.img_holder.configure(image="")
             self.cmd_capture.place_forget()
